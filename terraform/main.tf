@@ -8,40 +8,40 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-west-3"
+  region = var.region
 }
 
 resource "aws_vpc" "jamali" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr
     tags = {
-        Name = "vpc-jamali-terraform"
+        Name = "vpc-${var.vpc_name}-terraform"
     }
 }
 
 resource "aws_subnet" "public" {
   vpc_id     = aws_vpc.jamali.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = var.subnet_public_cidr
   availability_zone = "eu-west-3a"
   map_public_ip_on_launch = true
     tags = {
-        Name = "subnet-public-jamali-terraform"
+        Name = "subnet-public-${var.vpc_name}-terraform"
     }
 }
 
 resource "aws_subnet" "private" {
   vpc_id     = aws_vpc.jamali.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = var.subnet_private_cidr
   availability_zone = "eu-west-3b"
   map_public_ip_on_launch = false
     tags = {
-        Name = "subnet-private-jamali-terraform"
+        Name = "subnet-private-${var.vpc_name}-terraform"
     }
 }
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.jamali.id
     tags = {
-        Name = "igw-jamali-terraform"
+        Name = "igw-${var.vpc_name}-terraform"
     }
 }
 
@@ -54,7 +54,7 @@ resource "aws_route_table" "public" {
     }
 
     tags = {
-        Name = "rt-public-jamali-terraform"
+        Name = "rt-public-${var.vpc_name}-terraform"
     }
   
 }
@@ -72,7 +72,7 @@ resource "aws_nat_gateway" "nat" {
     allocation_id = aws_eip.nat.id
     subnet_id = aws_subnet.public.id
     tags = {
-        Name = "nat-jamali-terraform"
+        Name = "nat-${var.vpc_name}-terraform"
     } 
 }
 
@@ -85,7 +85,7 @@ resource "aws_route_table" "private" {
     }
 
     tags = {
-        Name = "rt-private-jamali-terraform"
+        Name = "rt-private-${var.vpc_name}-terraform"
     }
   
 }
